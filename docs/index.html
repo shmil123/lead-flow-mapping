@@ -255,10 +255,35 @@
       <div class="callout"><b>Proposal:</b> automate the same way as webinar leads — direct upload into the CRM, no manual hand-off.</div>
     </div>
 
-    <!-- SECTION 4: DECISIONS -->
+    <!-- SECTION 4: MQL ACTIVITY -->
     <div class="section">
       <div class="section-head">
         <span class="section-num">4</span>
+        <div>
+          <h2>MQL activity (lead scoring)</h2>
+          <p class="sub">Not a form submission, webinar, or event lead — a separate track based on engagement + demographic scoring</p>
+        </div>
+      </div>
+      <p class="journey-caption">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12h16M16 7l5 5-5 5"/></svg>
+        LEAD JOURNEY — follow the arrows left to right
+      </p>
+      <div class="hflow">
+        <div class="fbox neutral"><span class="ftag neutral">Step 1 · Trigger</span><p>Engagement + demographic profile crosses the lead-scoring threshold → becomes an MQL</p><span class="fstat">872 MQLs</span></div>
+        <div class="arrow-right">→</div>
+        <div class="fbox decision"><span class="ftag decision">Step 2 · Not synced</span><p>Not connected to the CRM at all today</p></div>
+        <div class="arrow-right">→</div>
+        <div class="fbox manual"><span class="ftag manual">Step 3 · Manual</span><p>Used for marketing nurture &amp; campaigns</p></div>
+        <div class="arrow-right">→</div>
+        <div class="fbox neutral"><span class="ftag neutral">Step 4 · End</span><p>Waits until they become a Contact Us / webinar / event lead — then re-enters one of the flows above</p></div>
+      </div>
+      <div class="callout"><b>Worth discussing:</b> these are HubSpot-scored on engagement and fit, not self-identified — but the list skews toward large, relevant enterprise accounts. Today they just sit in nurture until they take another action. Should some be treated as sales-ready without waiting for a form fill?</div>
+    </div>
+
+    <!-- SECTION 5: DECISIONS -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-num">5</span>
         <div>
           <h2>Decisions needed</h2>
           <p class="sub">Open items to align on</p>
@@ -269,13 +294,14 @@
         <li><b>Partnership / Academia / Government leads:</b> adopt the same automatic CRM routing as Speak with Sales/Demo, replacing the manual stakeholder hand-off?</li>
         <li><b>Human-in-the-loop:</b> where should a person still sit at the end of each flow vs. fully automated end-to-end?</li>
         <li><b>Webinar + event leads:</b> build direct automation into the CRM to remove Monet's manual upload — who owns it?</li>
+        <li><b>MQL activity:</b> 872 leads are lead-scored but sit outside the CRM entirely, used only for nurture. Should any of these be pushed into the CRM as sales-ready on their own?</li>
       </ul>
     </div>
 
   </div>
 
   <div class="foot" style="padding:0 36px 28px;">
-    <b>Sources:</b> "Contact Us" form dashboard (manager-built, HubSpot) for topic/monthly volume · "Website form submissions" Google Sheet (marketing tracker) for status breakdown, re-fetched 2026-08-12 via <code>read_sheet_counts.py</code> · webinar registered/attended counts from HubSpot lists 2229/2228 (portal 19920509), pulled live 2026-08-12 · event/webinar flow descriptions per Matan Wisebitan.
+    <b>Sources:</b> "Contact Us" form dashboard (manager-built, HubSpot) for topic/monthly volume · "Website form submissions" Google Sheet (marketing tracker) for status breakdown, re-fetched 2026-08-12 via <code>read_sheet_counts.py</code> · webinar registered/attended counts from HubSpot lists 2229/2228, and MQL count from HubSpot list 2258 (portal 19920509), pulled live 2026-08-12 · event/webinar/MQL flow descriptions per Matan Wisebitan.
   </div>
 </div>
 </body>
