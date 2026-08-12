@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Classiq — Lead Flow Mapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#191919; --panel:#202020; --panel-2:#242424;
+    --border:#333330; --border-soft:#2b2b28;
+    --text:#f5f5f0; --muted:#9d9d94; --xmuted:#6f6f68;
+    --lime:#D7F75B; --lime-dim:rgba(215,247,91,.16); --lime-deep:#aac741;
+    --teal:#5eead4; --amber:#f5c451; --red:#f87171; --slate:#7ba7d1; --done:#7ec98f;
+    --radius:10px;
+    --font:'Lato',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#0f0f0f;color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;padding:26px;}
+  .card{max-width:1180px;margin:0 auto;background:var(--bg);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5);overflow:hidden;border:1px solid var(--border-soft);}
+  .hero{padding:30px 36px 26px;background:var(--bg);border-bottom:1px solid var(--border);position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .hero::after{content:"";position:absolute;left:36px;bottom:-1px;width:52px;height:3px;background:var(--lime);}
+  .hero .kick{font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--lime);font-weight:700;}
+  .hero h1{margin:10px 0 4px;font-size:27px;font-weight:900;letter-spacing:-.01em;}
+  .hero .date{font-size:13px;color:var(--muted);}
+  .hero .updated{font-size:11px;color:var(--xmuted);text-align:right;white-space:nowrap;}
+
+  .body{padding:28px 36px 36px;}
+
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:28px;padding:12px 16px;background:var(--panel);border:1px solid var(--border-soft);border-radius:var(--radius);}
+  .legend span{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--muted);}
+  .dot{width:10px;height:10px;border-radius:50%;flex:none;}
+  .dot.automated{background:var(--done);}
+  .dot.manual{background:var(--amber);}
+  .dot.decision{background:var(--red);}
+
+  .section{margin-bottom:34px;}
+  .section:last-child{margin-bottom:0;}
+  .section-head{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+  .section-num{font-size:11px;font-weight:900;color:#191919;background:var(--lime);border-radius:5px;padding:2px 8px;flex:none;}
+  .section h2{margin:0;font-size:18px;font-weight:900;letter-spacing:-.01em;}
+  .section .sub{font-size:12.5px;color:var(--xmuted);margin:2px 0 0 0;}
+
+  /* flow diagram */
+  .journey-caption{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin:0 0 16px;font-weight:700;}
+  .journey-caption svg{flex:none;color:var(--lime);}
+  .trunk{display:flex;flex-direction:column;gap:0;max-width:460px;margin:0 auto;}
+  .arrow-down{text-align:center;color:var(--xmuted);font-size:19px;line-height:1;margin:3px 0;font-weight:900;}
+  .arrow-right{flex:none;color:var(--xmuted);font-size:20px;font-weight:900;padding:0 10px;align-self:center;}
+  .split-label{position:relative;text-align:center;font-size:10.5px;color:var(--xmuted);text-transform:uppercase;letter-spacing:.1em;font-weight:800;margin:10px 0 16px;}
+  .split-label::before,.split-label::after{content:"";position:absolute;top:50%;width:36%;height:1px;background:var(--border-soft);}
+  .split-label::before{left:0;}
+  .split-label::after{right:0;}
+  .lanes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+  .lane{display:flex;flex-direction:column;gap:0;border:1px dashed var(--border-soft);border-radius:10px;padding:12px 10px 14px;background:rgba(255,255,255,.015);}
+  .lane-head{font-size:11.5px;font-weight:900;text-align:center;color:var(--text);margin-bottom:8px;letter-spacing:.005em;}
+  .hflow{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin-bottom:14px;}
+  .hflow .fbox{flex:1;min-width:190px;}
+  .fbox{border-radius:9px;padding:12px 14px;border:1px solid var(--border-soft);background:var(--panel-2);position:relative;}
+  .fbox .ftag{font-size:9.5px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:5px;display:inline-block;margin-bottom:7px;}
+  .fbox .ftag.automated{background:rgba(126,201,143,.15);color:var(--done);border:1px solid rgba(126,201,143,.4);}
+  .fbox .ftag.manual{background:rgba(245,196,81,.14);color:var(--amber);border:1px solid rgba(245,196,81,.4);}
+  .fbox .ftag.decision{background:rgba(248,113,113,.14);color:var(--red);border:1px solid rgba(248,113,113,.4);}
+  .fbox .ftag.neutral{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);}
+  .fbox.automated{border-left:3px solid var(--done);}
+  .fbox.manual{border-left:3px solid var(--amber);}
+  .fbox.decision{border-left:3px solid var(--red);}
+  .fbox p{margin:0;font-size:12.5px;color:#c8c8c0;line-height:1.5;}
+  .fbox b{color:var(--text);}
+  .fbox .fstat{display:block;margin-top:7px;font-size:11px;font-weight:900;letter-spacing:.01em;color:var(--lime);}
+  .fbox .fstat.warn{color:var(--amber);}
+  .fbox .fstat.flag{color:var(--red);}
+
+  .callout{margin-top:6px;background:var(--lime-dim);border:1px solid rgba(215,247,91,.35);border-radius:var(--radius);padding:12px 16px;font-size:12.5px;color:#dcedb0;}
+  .callout b{color:var(--lime);}
+
+  /* data */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+  .stat{padding:14px 16px 12px;background:var(--panel);border:1px solid var(--border-soft);border-radius:var(--radius);}
+  .stat .label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700;}
+  .stat .value{font-size:24px;font-weight:900;font-variant-numeric:tabular-nums;margin-top:5px;letter-spacing:-.02em;line-height:1;color:var(--lime);}
+  .stat .sub{font-size:11px;color:var(--xmuted);margin-top:4px;}
+
+  .bars{background:var(--panel);border:1px solid var(--border-soft);border-radius:var(--radius);padding:16px 18px;margin-bottom:14px;}
+  .bars h3{margin:0 0 12px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;}
+  .bar-row{display:grid;grid-template-columns:180px 1fr 46px;align-items:center;gap:10px;margin-bottom:9px;}
+  .bar-row:last-child{margin-bottom:0;}
+  .bar-row .lbl{font-size:12px;color:#c8c8c0;font-weight:700;}
+  .bar-track{height:14px;background:var(--panel-2);border-radius:99px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:99px;}
+  .bar-row .val{font-size:12px;font-weight:900;text-align:right;color:var(--text);}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .caveat{font-size:11.5px;color:var(--xmuted);margin-top:4px;font-style:italic;}
+
+  .decisions{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;}
+  .decisions li{background:var(--panel);border:1px solid var(--border-soft);border-left:3px solid var(--red);border-radius:9px;padding:12px 16px;font-size:13px;color:#c8c8c0;}
+  .decisions li b{color:var(--text);}
+
+  .foot{margin-top:30px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--xmuted);line-height:1.7;}
+  .foot b{color:var(--muted);}
+
+  @media (max-width:820px){
+    .lanes{grid-template-columns:1fr;}
+    .hflow{flex-direction:column;}
+    .hflow .arrow-right{transform:rotate(90deg);padding:6px 0;}
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .two-col{grid-template-columns:1fr;}
+    .bar-row{grid-template-columns:130px 1fr 40px;}
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="hero">
+    <div>
+      <div class="kick">Marketing Ops</div>
+      <h1>Lead Flow Mapping</h1>
+      <div class="date">Website · Webinar · Event leads — the lead's journey today, with volume at each stage</div>
+    </div>
+    <div class="updated">Data through 2026-08-11<br/>Prepared 2026-08-12</div>
+  </div>
+
+  <div class="body">
+
+    <div class="legend">
+      <span><i class="dot automated"></i> Already automated</span>
+      <span><i class="dot manual"></i> Manual today</span>
+      <span><i class="dot decision"></i> Open decision</span>
+    </div>
+
+    <!-- SECTION 1: WEBSITE -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-num">1</span>
+        <div>
+          <h2>Website form leads — "Contact Us" form</h2>
+          <p class="sub">Single form on classiq.io with a topic dropdown; every submission lands in the marketing tracker sheet first</p>
+        </div>
+      </div>
+
+      <p class="journey-caption">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v16M12 20l-5-5M12 20l5-5"/></svg>
+        LEAD JOURNEY — follow the arrows; each box shows how many leads move through that step
+      </p>
+
+      <div class="trunk">
+        <div class="fbox neutral"><span class="ftag neutral">Step 1 · Trigger</span><p>Visitor submits <b>Contact Us</b> form, picks a topic</p><span class="fstat">170 submissions, 2026-01-07 → 2026-08-11</span></div>
+        <div class="arrow-down">↓</div>
+        <div class="fbox manual"><span class="ftag manual">Step 2 · Manual</span><p>Lands in tracker sheet — marketing reviews <b>every row</b> by hand</p><span class="fstat">170 leads</span></div>
+      </div>
+
+      <div class="split-label">then splits by topic ↓</div>
+
+      <div class="lanes">
+        <div class="lane">
+          <div class="lane-head">Speak with Sales/Demo</div>
+          <div class="fbox automated"><span class="ftag automated">Step 3 · Automated</span><p>Routed straight into the CRM</p><span class="fstat">37 leads</span></div>
+          <div class="arrow-down">↓</div>
+          <div class="fbox automated"><span class="ftag automated">Step 4 · End</span><p>Assigned to owner</p></div>
+        </div>
+        <div class="lane">
+          <div class="lane-head">Partnership / Academia / Government</div>
+          <div class="fbox manual"><span class="ftag manual">Step 3 · Manual</span><p>Marketing manually sends the lead's details &amp; message to the relevant stakeholder</p><span class="fstat">83 leads</span></div>
+          <div class="arrow-down">↓</div>
+          <div class="fbox manual"><span class="ftag manual">Step 4 · Manual</span><p>Stakeholder follows up and enters it into the CRM</p></div>
+          <div class="arrow-down">↓</div>
+          <div class="fbox manual"><span class="ftag manual">Step 5 · End</span><p>In the CRM</p></div>
+        </div>
+        <div class="lane">
+          <div class="lane-head">Career Opportunities / Press Inquiry</div>
+          <div class="fbox automated"><span class="ftag automated">Step 3 · Automated</span><p>Now <b>auto-disqualified immediately</b> — no manual review</p><span class="fstat">50 leads</span></div>
+          <div class="arrow-down">↓</div>
+          <div class="fbox decision"><span class="ftag decision">Step 4 · Decision needed</span><p>Then what? (discard / archive / auto-reply)</p></div>
+        </div>
+      </div>
+
+      <div class="callout"><b>Proposal:</b> automate Partnership / Academia / Government the same way as Speak with Sales/Demo — routed straight into the CRM instead of the manual stakeholder hand-off.</div>
+
+      <div class="stats" style="margin-top:16px;">
+        <div class="stat"><div class="label">Total submissions</div><div class="value">170</div><div class="sub">2026-01-07 → 2026-08-11</div></div>
+        <div class="stat"><div class="label">Reached CRM</div><div class="value">52</div><div class="sub">31% of all submissions</div></div>
+        <div class="stat"><div class="label">Disqualified</div><div class="value">71</div><div class="sub">mostly spam / guest-post junk</div></div>
+        <div class="stat"><div class="label">Growth</div><div class="value">+17%</div><div class="sub">/mo avg, Jan→Jul</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="bars">
+          <h3>By topic</h3>
+          <div class="bar-row"><span class="lbl">Partnership Inquiry</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--teal);"></div></div><span class="val">57</span></div>
+          <div class="bar-row"><span class="lbl">Speak with Sales/Demo</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:var(--done);"></div></div><span class="val">37</span></div>
+          <div class="bar-row"><span class="lbl">Press Inquiry</span><div class="bar-track"><div class="bar-fill" style="width:47%;background:var(--amber);"></div></div><span class="val">27</span></div>
+          <div class="bar-row"><span class="lbl">Career Opportunities</span><div class="bar-track"><div class="bar-fill" style="width:40%;background:var(--amber);"></div></div><span class="val">23</span></div>
+          <div class="bar-row"><span class="lbl">Academia</span><div class="bar-track"><div class="bar-fill" style="width:37%;background:var(--slate);"></div></div><span class="val">21</span></div>
+          <div class="bar-row"><span class="lbl">Government / Public Sector</span><div class="bar-track"><div class="bar-fill" style="width:9%;background:var(--slate);"></div></div><span class="val">5</span></div>
+          <div class="caveat">Source: manager's HubSpot form-fills dashboard, 2026-01-07 → 2026-08-11.</div>
+        </div>
+        <div class="bars">
+          <h3>By current status (live tracker sheet)</h3>
+          <div class="bar-row"><span class="lbl">In CRM ("New")</span><div class="bar-track"><div class="bar-fill" style="width:73%;background:var(--done);"></div></div><span class="val">52</span></div>
+          <div class="bar-row"><span class="lbl">Disqualified</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--red);"></div></div><span class="val">71</span></div>
+          <div class="bar-row"><span class="lbl">Maybe (not in CRM)</span><div class="bar-track"><div class="bar-fill" style="width:32%;background:var(--amber);"></div></div><span class="val">23</span></div>
+          <div class="bar-row"><span class="lbl">Qualified (not yet in CRM)</span><div class="bar-track"><div class="bar-fill" style="width:10%;background:var(--amber);"></div></div><span class="val">7</span></div>
+          <div class="bar-row"><span class="lbl">Other</span><div class="bar-track"><div class="bar-fill" style="width:24%;background:var(--muted);"></div></div><span class="val">17</span></div>
+          <div class="caveat">52 + 71 + 23 + 7 + 17 = 170 — every submission accounted for, all tagged by hand.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: WEBINAR -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-num">2</span>
+        <div>
+          <h2>Webinar leads</h2>
+          <p class="sub">Fully manual after capture — no automation between HubSpot and the CRM</p>
+        </div>
+      </div>
+      <p class="journey-caption">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12h16M16 7l5 5-5 5"/></svg>
+        LEAD JOURNEY — follow the arrows left to right
+      </p>
+      <div class="hflow">
+        <div class="fbox neutral"><span class="ftag neutral">Step 1 · Trigger</span><p>Registrant signs up → lands in a <b>HubSpot list/workflow</b></p><span class="fstat">176 registered · 127 attended</span></div>
+        <div class="arrow-right">→</div>
+        <div class="fbox manual"><span class="ftag manual">Step 2 · Manual</span><p>Marketing reviews the list, exports a <b>spreadsheet</b></p></div>
+        <div class="arrow-right">→</div>
+        <div class="fbox manual"><span class="ftag manual">Step 3 · Manual</span><p>Sends to <b>Monet</b>, who uploads it into the CRM by hand</p></div>
+      </div>
+      <div class="callout"><b>Proposal:</b> automate the HubSpot → CRM handoff directly — remove the spreadsheet export and Monet's manual upload.</div>
+    </div>
+
+    <!-- SECTION 3: EVENT -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-num">3</span>
+        <div>
+          <h2>Event leads</h2>
+          <p class="sub">Same manual pattern as webinar leads</p>
+        </div>
+      </div>
+      <p class="journey-caption">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12h16M16 7l5 5-5 5"/></svg>
+        LEAD JOURNEY — follow the arrows left to right
+      </p>
+      <div class="hflow">
+        <div class="fbox neutral"><span class="ftag neutral">Step 1 · Trigger</span><p>Lead captured at a booth/event</p></div>
+        <div class="arrow-right">→</div>
+        <div class="fbox manual"><span class="ftag manual">Step 2 · Manual</span><p>Marketing reviews the leads, exports a <b>spreadsheet</b></p></div>
+        <div class="arrow-right">→</div>
+        <div class="fbox manual"><span class="ftag manual">Step 3 · Manual</span><p>Sends to <b>Monet</b>, who uploads it into the CRM by hand</p></div>
+      </div>
+      <div class="callout"><b>Proposal:</b> automate the same way as webinar leads — direct upload into the CRM, no manual hand-off.</div>
+    </div>
+
+    <!-- SECTION 4: DECISIONS -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-num">4</span>
+        <div>
+          <h2>Decisions needed</h2>
+          <p class="sub">Open items to align on</p>
+        </div>
+      </div>
+      <ul class="decisions">
+        <li><b>Career / Press auto-disqualification:</b> what happens to a disqualified lead — discarded, archived, or auto-replied to?</li>
+        <li><b>Partnership / Academia / Government leads:</b> adopt the same automatic CRM routing as Speak with Sales/Demo, replacing the manual stakeholder hand-off?</li>
+        <li><b>Human-in-the-loop:</b> where should a person still sit at the end of each flow vs. fully automated end-to-end?</li>
+        <li><b>Webinar + event leads:</b> build direct automation into the CRM to remove Monet's manual upload — who owns it?</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="foot" style="padding:0 36px 28px;">
+    <b>Sources:</b> "Contact Us" form dashboard (manager-built, HubSpot) for topic/monthly volume · "Website form submissions" Google Sheet (marketing tracker) for status breakdown, re-fetched 2026-08-12 via <code>read_sheet_counts.py</code> · webinar registered/attended counts from HubSpot lists 2229/2228 (portal 19920509), pulled live 2026-08-12 · event/webinar flow descriptions per Matan Wisebitan.
+  </div>
+</div>
+</body>
+</html>
